@@ -6,8 +6,10 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { ManifestPlugin, RobotsTxtPlugin, SitemapPlugin } from './vite-plugins';
 
 export default defineConfig(({ mode }) => {
-	const env = loadEnv(mode, process.cwd(), '')
+	const envPath = process.env.VITE_ENV_DIR || process.cwd();
+	const env = loadEnv(mode, envPath, '')
 	return {
+		envDir: envPath,
 		base: '/',
 		plugins: [
 			react(),
