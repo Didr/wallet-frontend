@@ -20,7 +20,10 @@ FROM builder-base AS test
 
 COPY . .
 COPY .env.prod* .env
-RUN npm run vitest
+# Fail if .env is missing entirely
+RUN --mount=type=secret,id=wallet_frontend_envfile,dst=/home/node/app/.env,required=false ls .env
+# The secret is optional, but will override the .env if it exists. If the .env file already exists and secret is mounted, the secret will override the file. 
+RUN --mount=type=secret,id=wallet_frontend_envfile,dst=/home/node/app/.env,required=false npm run vitest
 
 
 FROM builder-base AS builder
@@ -30,6 +33,8 @@ COPY --from=test /home/node/app/package.json /dev/null
 
 COPY . .
 COPY .env.prod* .env
+# Fail if .env is missing entirely
+RUN --mount=type=secret,id=wallet_frontend_envfile,dst=/home/node/app/.env,required=false ls .env
 # The secret is optional. If the .env file already exists and secret is mounted, the secret will override the file. 
 RUN --mount=type=secret,id=wallet_frontend_envfile,dst=/home/node/app/.env,required=false yarn build
 
