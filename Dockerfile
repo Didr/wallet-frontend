@@ -1,7 +1,7 @@
-FROM node:22-trixie AS builder-base
+FROM node:22-alpine3.22 AS builder-base
+RUN apk --no-cache --update add git
 
 WORKDIR /home/node/app
-
 # Install dependencies first so rebuild of these layers is only needed when dependencies change
 COPY package.json yarn.lock ./
 RUN --mount=type=cache,target=/root/.yarn \
