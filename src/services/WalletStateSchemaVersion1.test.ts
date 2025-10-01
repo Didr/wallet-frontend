@@ -5,19 +5,19 @@ import { WalletStateContainer, WalletStateOperations } from "./WalletStateSchema
 
 
 /**
-	 "Fossilize" the given values: encode them as JSON and print an assignment
-	 statement to the console that parses the value back. The printed statement
-	 can then be used to replace the construction of the value in tests, in order
-	 to test backwards compatibility with values created in earlier versions of
-	 the app.
+	"Fossilize" the given values: encode them as JSON and print an assignment
+	statement to the console that parses the value back. The printed statement
+	can then be used to replace the construction of the value in tests, in order
+	to test backwards compatibility with values created in earlier versions of
+	the app.
 
-	 To use: Add a statement like `fossilize({ container, container1, container2
-	 });` to a test, then run the test. Copy the output from the console and
-	 replace the construction of the values (and the `fossilize` call) with the
-	 fossilized versions, but keep assertions and further post-processing of the
-	 value(s). Adjust the `unknown` types to the original types of the serialized
-	 values.
-	 */
+	To use: Add a statement like `fossilize({ container, container1, container2
+	});` to a test, then run the test. Copy the output from the console and
+	replace the construction of the values (and the `fossilize` call) with the
+	fossilized versions, but keep assertions and further post-processing of the
+	value(s). Adjust the `unknown` types to the original types of the serialized
+	values.
+	*/
 export function fossilize(containers: { [name: string]: WalletStateContainer }) {
 	Object.keys(containers).forEach(name => {
 		const container = containers[name];
