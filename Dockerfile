@@ -6,7 +6,7 @@ WORKDIR /home/node/app
 COPY package.json yarn.lock ./
 RUN --mount=type=cache,target=/root/.yarn \
 	yarn config set cache-folder /root/.yarn && \
-  yarn install --frozen-lockfile 
+  yarn install 
 
 FROM builder-base AS test
 
