@@ -6,6 +6,7 @@ import { ParsingEngineI, CredentialVerifier } from 'wallet-common/dist/interface
 
 type CredentialEngine = {
 	credentialParsingEngine: ParsingEngineI;
+	jptVerifier: CredentialVerifier;
 	sdJwtVerifier: CredentialVerifier;
 	msoMdocVerifier: CredentialVerifier;
 };
