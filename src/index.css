@@ -20,7 +20,7 @@ body {
 
 	html,
 	body {
-		background-color: rgb(17 24 39);
+		background-color: rgb(31 30 31 / var(--tw-bg-opacity, 1));
 		/* Dark mode background */
 	}
 }
@@ -62,7 +62,7 @@ body {
 
 .nav-item-animate-hover:hover {
 	background-position: right;
-	color: #003476;
+	color: rgb(202 64 43 / var(--tw-bg-opacity, 1));
 }
 
 /* Fade in animation for content */

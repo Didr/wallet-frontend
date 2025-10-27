@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-
-const config = {
+export default {
 	darkMode: "class",
 	content: ["./src/**/*.{js,jsx,ts,tsx}"],
 	theme: {
@@ -12,14 +11,27 @@ const config = {
 				'55': 55,
 			},
 			colors: {
-				'primary-dark': '#003476',
-				'primary-dark-hover': '#003476',
-				'primary': '#0750AF',
-				'primary-hover': '#004195',
-				'primary-light': '#1D6FDB',
-				'primary-light-hover': '#0F59BA',
-				'extra-light': '#42B6E9',
-				'extra-light-hover': '#2CABE3',
+				'primary-dark': '#323031',
+				'primary-dark-hover': '#323031',
+				'primary': '#ca402b',
+				'primary-hover': '#ca402b',
+				'primary-light': '#ca402b',
+				'primary-light-hover': '#ca402b',
+				'extra-light': '#ca402b',
+				'extra-light-hover': '#ca402b',
+				gray: {
+    		 	50:  '#fafafa',
+          100: '#f2f2f2',
+          200: '#e0e0e0',
+          300: '#c6c6c6',
+          400: '#a1a1a1',
+          500: '#7c7c7c',
+          600: '#5a595a',
+          700: '#444344',
+          800: '#323031',
+          900: '#1f1e1f',
+          950: '#0f0e0f',
+        },
 			},
 			screens: {
 				'2xs': '360px',
@@ -48,5 +60,3 @@ const config = {
 	},
 	plugins: [],
 };
-
-export default config;
