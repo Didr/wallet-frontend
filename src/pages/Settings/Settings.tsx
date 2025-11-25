@@ -14,7 +14,7 @@ import useScreenType from '../../hooks/useScreenType';
 import { UserData, WebauthnCredential } from '../../api/types';
 import { compareBy, toBase64Url } from '../../util';
 import { withAuthenticatorAttachmentFromHints } from '@/util-webauthn';
-import { formatDate } from '../../functions/DateFormat';
+import { formatDate } from '@/utils';
 import type { WebauthnPrfEncryptionKeyInfo } from '../../services/keystore';
 import { isPrfKeyV2, serializePrivateData } from '../../services/keystore';
 
@@ -78,7 +78,7 @@ const Dialog = ({
 	return (
 		<dialog
 			ref={dialog}
-			className="p-4 pt-8 text-center rounded md:space-y-6 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-700"
+			className="p-4 pt-8 text-center rounded-sm md:space-y-6 sm:p-8 bg-white rounded-lg shadow-sm dark:bg-gray-700"
 			style={{ minWidth: '30%' }}
 			onCancel={onCancel}
 		>
@@ -215,7 +215,7 @@ const WebauthnRegistation = ({
 
 	return (
 		<div className="flex flex-row flex-wrap items-baseline gap-2">
-			<span className="flex-grow">{t('pageSettings.addPasskey')}</span>
+			<span className="grow">{t('pageSettings.addPasskey')}</span>
 			{
 				[
 					{ hint: "client-device", btnLabel: t('common.platformPasskey'), Icon: GoPasskeyFill },
@@ -261,7 +261,7 @@ const WebauthnRegistation = ({
 								<p className="mb-2 dark:text-white">{t('registerPasskey.giveNickname')}</p>
 								<input
 									type="text"
-									className="border border-gray-300 dark:border-gray-500 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride py-1.5 px-3"
+									className="border border-gray-300 dark:border-gray-500 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride py-1.5 px-3"
 									aria-label={t('registerPasskey.nicknameAriaLabel')}
 									autoFocus={true}
 									disabled={isSubmitting}
@@ -471,7 +471,7 @@ const UnlockMainKey = ({
 					<p className="mb-2">{t('pageSettings.unlockPassword.description')}</p>
 					<input
 						type="password"
-						className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight"
+						className="shadow-xs appearance-none border rounded-sm py-2 px-3 text-gray-700 leading-tight"
 						aria-label={t('pageSettings.unlockPassword.passwordInputAriaLabel')}
 						autoFocus={true}
 						disabled={isSubmittingPassword}
@@ -592,7 +592,7 @@ const WebauthnCredentialItem = ({
 									{t('pageSettings.passkeyItem.nickname')}:&nbsp;
 								</p>
 								<input
-									className="border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride py-1.5 px-3 w-36"
+									className="border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride py-1.5 px-3 w-36"
 
 									type="text"
 									placeholder={t('pageSettings.passkeyItem.nicknameInput')}
@@ -741,6 +741,9 @@ const Settings = () => {
 	const [upgradePrfState, setUpgradePrfState] = useState<UpgradePrfState | null>(null);
 	const upgradePrfPasskeyLabel = useWebauthnCredentialNickname(upgradePrfState?.webauthnCredential);
 	const [successMessage, setSuccessMessage] = useState('');
+	const [obliviousSettingsMessage, setObliviousSettingsMessage] = useState('');
+
+	const { getCalculatedWalletState } = keystore;
 
 	const deleteAccount = async () => {
 		try {
@@ -888,6 +891,7 @@ const Settings = () => {
 				throw new Error("Update token max age: newMaxAge is not a number");
 			}
 			const [, newPrivateData, keystoreCommit] = await keystore.alterSettings({
+				...getCalculatedWalletState().settings,
 				openidRefreshTokenMaxAgeInSeconds: newMaxAge,
 			});
 			await api.updatePrivateData(newPrivateData);
@@ -904,6 +908,29 @@ const Settings = () => {
 		}
 	};
 
+	const handleObliviousChange = async (useOblivious: string) => {
+		try {
+			if (!['true', 'false'].includes(useOblivious)) {
+				throw new Error("Update useOblivious: invalid value");
+			}
+			const [, newPrivateData, keystoreCommit] = await keystore.alterSettings({
+				...getCalculatedWalletState().settings,
+				useOblivious: useOblivious.toString(),
+			});
+			await api.updatePrivateData(newPrivateData);
+			await keystoreCommit();
+
+			console.log('Settings updated successfully');
+			setObliviousSettingsMessage(t('pageSettings.oblivious.successMessage'));
+			setTimeout(() => {
+				setObliviousSettingsMessage('');
+			}, 3000);
+			refreshData();
+		} catch (error) {
+			console.error('Failed to update settings', error);
+		}
+	}
+
 	return (
 		<>
 			<div className="px-6 sm:px-12 w-full">
@@ -916,7 +943,7 @@ const Settings = () => {
 							<H2 heading={t('pageSettings.title.language')} />
 							<div className="relative inline-block min-w-36 text-gray-700">
 								<div className="relative">
-									<LanguageSelector className="h-10 pl-3 pr-10 border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride appearance-none" showName={true} />
+									<LanguageSelector className="h-10 pl-3 pr-10 border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride appearance-none" showName={true} />
 								</div>
 							</div>
 						</div>
@@ -994,7 +1021,7 @@ const Settings = () => {
 								<div className="relative inline-block min-w-36 text-gray-700">
 									<div className="relative">
 										<select
-											className={`h-10 pl-3 pr-10 border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride appearance-none`}
+											className={`h-10 pl-3 pr-10 border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride appearance-none`}
 											defaultValue={userData.settings.openidRefreshTokenMaxAgeInSeconds}
 											onChange={(e) => handleTokenMaxAgeChange(e.target.value)}
 											disabled={!isOnline}
@@ -1014,6 +1041,36 @@ const Settings = () => {
 								{successMessage && (
 									<div className="text-md text-green-500">
 										{successMessage}
+									</div>
+								)}
+							</div>
+						</div>
+						<div className="my-2 py-2">
+							<H2 heading={t('pageSettings.oblivious.title')} />
+							<p className='mb-2 dark:text-white'>
+								{t('pageSettings.oblivious.description')}
+							</p>
+							<div className='flex gap-2 items-center'>
+								<div className="relative inline-block min-w-36 text-gray-700">
+									<div className="relative">
+										<select
+											className={`h-10 pl-3 pr-10 border border-gray-300 dark:border-gray-500 dark:bg-gray-800 dark:text-white rounded-lg focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 dark:inputDarkModeOverride appearance-none`}
+											defaultValue={userData.settings.useOblivious}
+											onChange={(e) => handleObliviousChange(e.target.value)}
+											disabled={!isOnline}
+											title={!isOnline ? t("common.offlineTitle") : undefined}
+										>
+											<option value="false">{t('pageSettings.oblivious.disabled')}</option>
+											<option value="true">{t('pageSettings.oblivious.gunet')}</option>
+										</select>
+										<span className="absolute top-1/2 right-2 transform -translate-y-[43%] pointer-events-none">
+											<IoIosArrowDown className='dark:text-white' />
+										</span>
+									</div>
+								</div>
+								{obliviousSettingsMessage && (
+									<div className="text-md text-green-500">
+										{obliviousSettingsMessage}
 									</div>
 								)}
 							</div>

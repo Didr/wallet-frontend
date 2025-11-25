@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { formatDate } from '../../functions/DateFormat';
+import { formatDate } from '@/utils';
 import { getLanguage } from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import JsonViewer from '../JsonViewer/JsonViewer';
@@ -14,7 +14,7 @@ const Legend = ({ showRequired, showRequested, t }) => {
 			className="mb-2 flex justify-end"
 			aria-label={t('credentialInfo.legendAriaLabel')}
 		>
-			<div className='flex flex-col py-[1px] px-2 items-end w-auto text-[11px] italic text-gray-600 dark:text-gray-300 border border-gray-200 rounded-sm dark:border-gray-400/40'>
+			<div className='flex flex-col py-[1px] px-2 items-end w-auto text-[11px] italic text-gray-600 dark:text-gray-300 border border-gray-200 rounded-xs dark:border-gray-400/40'>
 				{showRequired && (
 					<span className="inline-flex items-center gap-1" title={t('credentialInfo.legendRequired')}>
 						<span>{t('credentialInfo.legendRequired')}</span>
@@ -34,8 +34,8 @@ const Legend = ({ showRequired, showRequested, t }) => {
 
 const getLabelAndDescriptionByLang = (displayArray, lang, fallbackLang) => {
 	const match =
-		displayArray.find(d => getLanguage(d.lang) === lang) ||
-		displayArray.find(d => getLanguage(d.lang) === fallbackLang) ||
+		displayArray.find(d => getLanguage(d.locale) === lang) ||
+		displayArray.find(d => getLanguage(d.locale) === fallbackLang) ||
 		displayArray[0] || {};
 
 	return {
@@ -124,7 +124,7 @@ const expandDisplayClaims = (claims, signedClaims) => {
 const isDisplayClaim = (claim) => {
 	if (!Array.isArray(claim.path)) return false;
 	if (!Array.isArray(claim.display)) return false;
-	return claim.display.some(d => d.lang && d.label);
+	return claim.display.some(d => d.locale && d.label);
 };
 
 const formatClaimValue = (value) => {
@@ -134,13 +134,13 @@ const formatClaimValue = (value) => {
 			src={src}
 			alt=""
 			aria-hidden="true"
-			className="max-h-10 max-w-full rounded border"
+			className="max-h-10 max-w-full rounded-sm border"
 		/>
 	);
 
 	const renderJson = (v) => (
 		<div className="w-full">
-			<div className="max-h-40 resize-y bg-white dark:bg-gray-800 overflow-auto border rounded px-2 rounded-xl">
+			<div className="max-h-40 resize-y bg-white dark:bg-gray-800 overflow-auto border rounded-sm px-2 rounded-xl">
 				<JsonViewer value={v} />
 			</div>
 		</div>
@@ -204,12 +204,12 @@ const CredentialInfo = ({ parsedCredential, mainClassName = "text-sm lg:text-bas
 	// Define custom claims to display from signedClaims if claims is missing
 	const customClaims = fallbackClaims ? fallbackClaims :
 		[
-			{ path: ['given_name'], display: [{ lang: 'en', label: 'Given Name' }] },
-			{ path: ['family_name'], display: [{ lang: 'en', label: 'Family Name' }] },
-			{ path: ['birth_date'], display: [{ lang: 'en', label: 'Birth Date' }] },
-			{ path: ['document_number'], display: [{ lang: 'en', label: 'Document Number' }] },
-			{ path: ['issuance_date'], display: [{ lang: 'en', label: 'Issuance Date' }] },
-			{ path: ['expiry_date'], display: [{ lang: 'en', label: 'Expiry Date' }] },
+			{ path: ['given_name'], display: [{ locale: 'en', label: 'Given Name' }] },
+			{ path: ['family_name'], display: [{ locale: 'en', label: 'Family Name' }] },
+			{ path: ['birth_date'], display: [{ locale: 'en', label: 'Birth Date' }] },
+			{ path: ['document_number'], display: [{ locale: 'en', label: 'Document Number' }] },
+			{ path: ['issuance_date'], display: [{ locale: 'en', label: 'Issuance Date' }] },
+			{ path: ['expiry_date'], display: [{ locale: 'en', label: 'Expiry Date' }] },
 		];
 
 	const existingCustomClaims = customClaims.filter(field => getValueByPath(field.path, signedClaims) !== undefined);
@@ -271,13 +271,13 @@ const CredentialInfo = ({ parsedCredential, mainClassName = "text-sm lg:text-bas
 				if (!claim.display || !claim.display.some(d => d.label)) {
 					expandedDisplayClaims[claimIdx] = {
 						...claim,
-						display: [{ lang: 'en', label: joined, description: '' }]
+						display: [{ locale: 'en', label: joined, description: '' }]
 					};
 				}
 			} else if (value !== undefined) {
 				syntheticClaims.push({
 					path: pathArr,
-					display: [{ lang: 'en', label: joined, description: '' }]
+					display: [{ locale: 'en', label: joined, description: '' }]
 				});
 			}
 		});
@@ -387,8 +387,8 @@ const CredentialInfo = ({ parsedCredential, mainClassName = "text-sm lg:text-bas
 				return (
 					<div
 						key={fullPath}
-						className={`flex flex-row sm:items-start sm:gap-2 px-2 py-1 rounded ${(isRequested || isRequired) && requestedDisplay === "highlight"
-							? `bg-blue-50 shadow ${screenType === 'desktop' ? 'dark:bg-gray-600' : 'dark:bg-gray-800'}`
+						className={`flex flex-row sm:items-start sm:gap-2 px-2 py-1 rounded-sm ${(isRequested || isRequired) && requestedDisplay === "highlight"
+							? `bg-blue-50 shadow-sm ${screenType === 'desktop' ? 'dark:bg-gray-600' : 'dark:bg-gray-800'}`
 							: ''
 							}`}
 					>
@@ -411,13 +411,13 @@ const CredentialInfo = ({ parsedCredential, mainClassName = "text-sm lg:text-bas
 								<div className='flex'>
 									{isRequired && (
 										<TbAsterisk
-											className="text-primary dark:text-white flex-shrin"
+											className="text-primary dark:text-white shrink-0"
 										/>
 									)}
 									{isRequested && (
 										<IoIosSend
 											title="Requested by verifier"
-											className="text-primary dark:text-white flex-shrink-0"
+											className="text-primary dark:text-white shrink-0"
 										/>
 									)}
 								</div>

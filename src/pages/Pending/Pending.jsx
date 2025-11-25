@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { formatDate } from "../../functions/DateFormat";
+import { formatDate } from "@/utils";
 import { reverse, compareBy } from "@/util";
 import CredentialsContext from "@/context/CredentialsContext";
 import { useOpenID4VCIHelper } from "@/lib/services/OpenID4VCIHelper";
@@ -68,7 +68,7 @@ const Pending = () => {
 							return (
 								<div
 									key={pt.credentialEndpoint.transactionId}
-									className="text-sm px-4 py-2 dark:text-white border border-gray-300 shadow-sm dark:border-gray-600 rounded-md w-full text-left"
+									className="text-sm px-4 py-2 dark:text-white border border-gray-300 shadow-xs dark:border-gray-600 rounded-md w-full text-left"
 								>
 									<div className="flex gap-2 items-center">
 
